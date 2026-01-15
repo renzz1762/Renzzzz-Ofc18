@@ -25,7 +25,7 @@
 
 .comment-slider {
     display: flex;
-    width: 300%;
+    width: 200%;
     transition: transform 0.3s ease;
 }
 
@@ -3257,7 +3257,14 @@ function buyNow(index) {
     const product = products[index];
     document.getElementById('modalProduct').textContent = product.name + ' - ' + product.price;
     
-    const fileListHTML = product.files.map((file, i) => `
+    const fileListHTML = product.files.map((file, i) => {
+    // Escape content untuk keamanan
+    const escapedContent = file.content
+        .replace(/\\/g, '\\\\')
+        .replace(/`/g, '\\`')
+        .replace(/\$/g, '\\$');
+    
+    return `
         <div class="file-item">
             <div class="file-info">
                 <div class="file-icon">📄</div>
@@ -3266,11 +3273,12 @@ function buyNow(index) {
                     <p>${file.size}</p>
                 </div>
             </div>
-            <button class="btn-download-file" onclick="downloadFile('${file.name}', \`${file.content}\`)">
+            <button class="btn-download-file" onclick='downloadFile("${file.name}", \`${escapedContent}\`)'>
                 📥 Download
             </button>
         </div>
-    `).join('');
+    `;
+}).join('');
     
     const tutorialButton = product.tutorialVideo ? `
         <a href="${product.tutorialVideo}" target="_blank" style="text-decoration: none;">

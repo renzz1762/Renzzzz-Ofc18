@@ -1380,6 +1380,178 @@ music.addEventListener('pause', updateButton);
     <script>
 const products = [
     {
+        name: 'SCRIPT AURA TAS TAS BUAT RECAL RECAL DI SUMMIT ( STATERCARAKTERSCRIPT )',
+        price: 'GRATIS',
+        icon: 'https://upper-coffee-zglk71yegn.edgeone.app/IMG_20260117_233856.jpg',
+        iconType: 'image',
+        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        badge: 'New | Unlimited',
+        stock: Infinity,
+        category: 'Unlimited',
+        tutorialVideo: 'https://vt.tiktok.com/ZS5cSfwQm/',
+        files: [
+            {
+                name: 'aura_tas_tas.txt',
+                size: '1.8 KB',
+                content: `-- Script Aura Tas Tas
+-- LocalScript di StarterGui atau StarterPlayer > StarterCharacterScripts
+
+-- Buat ScreenGui
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "AuraGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Buat tombol GUI di pojok kanan atas
+local button = Instance.new("TextButton")
+button.Name = "AuraButton"
+button.Size = UDim2.new(0, 100, 0, 50)
+button.Position = UDim2.new(1, -110, 0, 10)
+button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+button.BorderSizePixel = 2
+button.Text = "Aura"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.TextSize = 20
+button.Font = Enum.Font.SourceSansBold
+button.Parent = screenGui
+
+-- Rounded corners
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = button
+
+-- Status aura
+local auraActive = false
+local auraEffect = nil
+
+-- SETTING: Posisi aura (X, Y, Z) - Atur Y buat naik/turun
+local AURA_OFFSET = Vector3.new(0, -3, 0) -- Y negatif = turun, Y positif = naik
+
+-- Fungsi untuk attach aura ke character
+local function attachAuraToCharacter(aura, character)
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    
+    -- Set parent ke character
+    aura.Parent = character
+    
+    -- Kalau aura adalah Model
+    if aura:IsA("Model") then
+        -- Set PrimaryPart kalau belum ada
+        if not aura.PrimaryPart then
+            for _, part in pairs(aura:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    aura.PrimaryPart = part
+                    break
+                end
+            end
+        end
+        
+        -- Pindahin posisi aura ke posisi avatar dengan offset
+        if aura.PrimaryPart then
+            aura:SetPrimaryPartCFrame(humanoidRootPart.CFrame * CFrame.new(AURA_OFFSET))
+        end
+        
+        -- Set semua part jadi non-collidable dan unanchored
+        for _, part in pairs(aura:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Anchored = false
+                part.CanCollide = false
+                part.Massless = true
+                
+                -- Weld setiap part ke HumanoidRootPart
+                local weld = Instance.new("Weld")
+                weld.Part0 = humanoidRootPart
+                weld.Part1 = part
+                weld.C0 = CFrame.new(AURA_OFFSET) -- Offset posisi
+                weld.C1 = part.CFrame:ToObjectSpace(humanoidRootPart.CFrame * CFrame.new(AURA_OFFSET))
+                weld.Parent = part
+            end
+        end
+        
+    -- Kalau aura adalah Part
+    elseif aura:IsA("BasePart") then
+        -- Pindahin ke posisi avatar dengan offset
+        aura.CFrame = humanoidRootPart.CFrame * CFrame.new(AURA_OFFSET)
+        aura.Anchored = false
+        aura.CanCollide = false
+        aura.Massless = true
+        
+        -- Weld ke HumanoidRootPart
+        local weld = Instance.new("Weld")
+        weld.Part0 = humanoidRootPart
+        weld.Part1 = aura
+        weld.C0 = CFrame.new(AURA_OFFSET)
+        weld.Parent = aura
+        
+    -- Kalau ada part di dalam aura
+    else
+        for _, child in pairs(aura:GetChildren()) do
+            if child:IsA("BasePart") then
+                -- Pindahin ke posisi avatar dengan offset
+                child.CFrame = humanoidRootPart.CFrame * CFrame.new(AURA_OFFSET)
+                child.Anchored = false
+                child.CanCollide = false
+                child.Massless = true
+                
+                local weld = Instance.new("Weld")
+                weld.Part0 = humanoidRootPart
+                weld.Part1 = child
+                weld.C0 = CFrame.new(AURA_OFFSET)
+                weld.Parent = child
+            end
+        end
+    end
+end
+
+-- Fungsi untuk toggle aura
+button.MouseButton1Click:Connect(function()
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    if not auraActive then
+        -- Aktifkan aura
+        auraActive = true
+        button.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        button.Text = "Aura ON"
+        
+        -- Cari aura dari ReplicatedStorage atau Workspace
+        local auraTemplate = game.ReplicatedStorage:FindFirstChild("auraku") or game.Workspace:FindFirstChild("auraku")
+        
+        if auraTemplate then
+            auraEffect = auraTemplate:Clone()
+            attachAuraToCharacter(auraEffect, character)
+        else
+            warn("Aura 'auraku' tidak ditemukan di ReplicatedStorage atau Workspace!")
+        end
+        
+    else
+        -- Matikan aura
+        auraActive = false
+        button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        button.Text = "Aura"
+        
+        if auraEffect then
+            auraEffect:Destroy()
+            auraEffect = nil
+        end
+    end
+end)
+
+-- Reset aura saat respawn
+player.CharacterAdded:Connect(function()
+    auraActive = false
+    auraEffect = nil
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.Text = "Aura"
+end)`
+    },  
+            }
+        ],
+        comments: []
+    },  
+    {
         name: 'SCRIPT P BALAP ( DI ASET MODEL INI KALIAN TAMBAHIN SCRIPT DI SERVER SCRIPT SERVICE )',
         price: 'GRATIS',
         icon: 'https://asleep-bronze-qwa9c3zmt6.edgeone.app/IMG_20260114_153803.jpg', // Bisa emoji atau URL gambar
@@ -1395,7 +1567,7 @@ const products = [
         name: 'SCRIPT MUSIC ( BISA ANTRI MUSIC )',
         price: 'GRATIS',
         icon: 'https://fond-indigo-zu9php5xei.edgeone.app/IMG_20260114_153733.jpg', // CONTOH PAKE GAMBAR
-        iconType: 'image', // Set 'image' kalau pake foto
+        iconType: 'image', // Set 'iage' kalau pake foto
         gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
         badge: 'New',
         stock: 0,
